@@ -1,0 +1,53 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+group = 'com.kshyk'
+version = '1.0.0'
+description = """serenity-fw"""
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.42.0"
+        classpath "io.freefair.gradle:lombok-plugin:${lombokVersion}"
+    }
+}
+apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'io.freefair.lombok'
+
+compileTestJava {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    options.compilerArgs += '-parameters'
+}
+
+repositories {
+    maven { url "https://maven.java.net/content/repositories/staging/" }
+    maven { url "https://repo.maven.apache.org/maven2" }
+}
+
+dependencies {
+    implementation("net.serenity-bdd:serenity-core:${serenityVersion}")
+    implementation("net.serenity-bdd:serenity-junit:${serenityVersion}")
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
+    reports {
+        junitXml.enabled(true)
+    }
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
